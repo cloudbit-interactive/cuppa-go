@@ -4,10 +4,13 @@ package cuppago
 Libraries
 	go get -u github.com/go-sql-driver/mysql
 Example:
-	db := utils.NewDataBase("localhost:3306","godb", "root", "")
+	db := cuppago.NewDataBase("localhost","golang", "root", "", "")
 	// Insert
 	data := map[string]interface{}{"name":"Tufik","age":50, "date":"NOW()"}
-	db.Insert("user", data, "")
+	db.Insert("users", data, "")
+	// Get
+	data := map[string]interface{}{"name":"Tufik","age":50, "date":"NOW()"}
+	db.Insert("users", data, "")
 */
 
 import (
@@ -28,7 +31,8 @@ type DataBase struct {
 	Conn     *sql.DB
 }
 
-// NewDataBase : Create a new DataBase connection
+// Example:
+// db := cuppago.NewDataBase("localhost","golang", "root", "", "")
 func NewDataBase(host string, db string, username string, password string, port string) DataBase {
 	if port == "" {
 		port = "3306"
@@ -58,7 +62,9 @@ func (db *DataBase) Add(table string, data map[string]interface{}, condition str
 	return result
 }
 
-// Insert : Inser data in a specific table
+// Example:
+// data := map[string]interface{}{"name":"Tufik","age":50, "date":"NOW()"}
+// db.Insert("users", data, "")
 func (db *DataBase) Insert(table string, data map[string]interface{}, columnsToReturn string) map[string]interface{} {
 	keys := make([]string, 0)
 	values := make([]string, 0)
@@ -120,7 +126,8 @@ func (db *DataBase) Update(table string, data map[string]interface{}, condition 
 	return rowToReturn
 }
 
-// GetList : Get a slide of data from a specific table
+// Example:
+// data := db.GetList("users", "", "", "", "")
 func (db *DataBase) GetList(table string, condition string, limit string, orderBy string, columns string) []map[string]interface{} {
 	sql := "SELECT * FROM " + table
 	if columns != "" {
