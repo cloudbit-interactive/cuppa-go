@@ -7,6 +7,6 @@ import (
 	"testing"
 )
 
-func TestNonColorable{
+func Test1{
 
 }
