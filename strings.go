@@ -32,7 +32,9 @@ func PathData(path string) map[string]interface{} {
 	// domain
 	var domain = strings.Replace(base, "https://", "", -1)
 	domain = strings.Replace(domain, "http://", "", -1)
-	domain = domain[0:strings.Index(domain, "/")]
+	if domain != "" {
+		domain = domain[0:strings.Index(domain, "/")]
+	}
 	result["domain"] = domain
 	// protocol
 	result["protocol"] = "http"
@@ -50,7 +52,13 @@ func PathData(path string) map[string]interface{} {
 		}
 		var data = make(map[string]interface{})
 		var dataArray = strings.Split(dataStr, "&")
+
 		for i := 0; i < len(dataArray); i++ {
+			if strings.Index(dataArray[i], "=") == -1{
+				data[dataArray[i]] = "";
+				continue
+			}
+
 			var parts = strings.Split(dataArray[i], "=")
 			if parts[0] != "" {
 				if parts[1] != "" {
