@@ -6,9 +6,14 @@
 package cuppago
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"regexp"
 	"strings"
 	"unicode"
@@ -54,8 +59,8 @@ func PathData(path string) map[string]interface{} {
 		var dataArray = strings.Split(dataStr, "&")
 
 		for i := 0; i < len(dataArray); i++ {
-			if strings.Index(dataArray[i], "=") == -1{
-				data[dataArray[i]] = "";
+			if strings.Index(dataArray[i], "=") == -1 {
+				data[dataArray[i]] = ""
 				continue
 			}
 
@@ -164,4 +169,49 @@ func Camelize(in string) string {
 		out = append(out, r)
 	}
 	return string(out)
+}
+
+// Example:
+// encryptedText := Encrypt("MyText", "256-bit-key-generator")
+// Key generator = https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
+	key, _ := hex.DecodeString(keyString)
+	plaintext := []byte(stringToEncrypt)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return ""
+	}
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return ""
+	}
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return ""
+	}
+	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
+	return fmt.Sprintf("%x", ciphertext)
+}
+
+// Example:
+// decryptedText := Decrypt("MyEncryptedText", "256-bit-key-generator")
+// Key generator = https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+func Decrypt(encryptedString string, keyString string) (decryptedString string) {
+	key, _ := hex.DecodeString(keyString)
+	enc, _ := hex.DecodeString(encryptedString)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return ""
+	}
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return ""
+	}
+	nonceSize := aesGCM.NonceSize()
+	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
+	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%s", plaintext)
 }
