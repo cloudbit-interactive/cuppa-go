@@ -1,6 +1,6 @@
 # cuppa-go
 
-All pupose library
+All-purpose library
 
 Installation
 ```
