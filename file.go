@@ -12,7 +12,7 @@ func GetRootPath() string {
 		panic(err)
 	}
 	path := filepath.Dir(ex)
-	if strings.Contains(strings.ToLower(path), "temp") == true || strings.Contains(strings.ToLower(path), "private/") == true {
+	if strings.Contains(strings.ToLower(path), "temp") == true || strings.Contains(strings.ToLower(path), "private/") == true || strings.Contains(strings.ToLower(path), "/t/") == true {
 		path, err := os.Getwd()
 		if err != nil {
 			panic(err)
